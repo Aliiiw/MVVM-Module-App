@@ -40,8 +40,6 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun ObservePostsViewModel() {
-        val viewModel = ViewModelProvider(this).get(PostsViewModel::class.java)
-        viewModel.getAllPostsRequest()
 
         var postsList by remember { mutableStateOf(emptyList<Post>()) }
 
@@ -49,18 +47,24 @@ class MainActivity : ComponentActivity() {
             PostView(postList = postsList)
         }
 
-        viewModel.postsList.observe(this) { posts ->
-            postsList = posts
-        }
+        LaunchedEffect(key1 = Unit) {
 
-        viewModel.postsListError.observe(this) { isError ->
-            isError?.let {
-                Log.e("2323", isError)
+            val viewModel = ViewModelProvider(this@MainActivity).get(PostsViewModel::class.java)
+            viewModel.getAllPostsRequest()
+
+            viewModel.postsList.observe(this@MainActivity) { posts ->
+                postsList = posts
             }
-        }
 
-        viewModel.loading.observe(this) { isLoading ->
-            Log.e("2323", isLoading.toString())
+            viewModel.postsListError.observe(this@MainActivity) { isError ->
+                isError?.let {
+                    Log.e("2323", isError)
+                }
+            }
+
+            viewModel.loading.observe(this@MainActivity) { isLoading ->
+                Log.e("2323", isLoading.toString())
+            }
         }
     }
 
